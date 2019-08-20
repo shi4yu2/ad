@@ -267,6 +267,6 @@ def randomisation_parts(filename, result_path, part, subj, constraints):
 
         results += table_random
 
-    result_file = result_path + "gemination_axb_" + subj + ".csv"
+    result_file = result_path + subj + ".csv"
     write_result_table(result_file, results)
     return

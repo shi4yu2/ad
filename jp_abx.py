@@ -252,6 +252,96 @@ def abx(screen, background, expedir, input_file, result_file, instructions, isi=
 	return resume
 
 
+#------------------------------------------------------------------------------
+#		ident() function
+#------------------------------------------------------------------------------
+# Response function
+def wait_ident(dur):
+    ticks0 = pygame.time.get_ticks()
+    while True:
+        if dur != None and pygame.time.get_ticks() > ticks0 + dur:
+            return
+        for ev in pygame.event.get():
+            if ev.type == QUIT or (ev.type == KEYDOWN and ev.key == K_ESCAPE):
+                raise Exception
+            if ev.type == KEYDOWN:
+                if ev.key == K_s:
+                    return ['0', pygame.time.get_ticks() - ticks0]
+                if ev.key == K_d:
+                    return ['a', pygame.time.get_ticks() - ticks0]
+                if ev.key == K_f:
+                    return ['i', pygame.time.get_ticks() - ticks0]
+                if ev.key == K_j:
+                    return ['u', pygame.time.get_ticks() - ticks0]
+                if ev.key == K_k:
+                    return ['e', pygame.time.get_ticks() - ticks0]
+                elif ev.key == K_l:
+                    return ['o', pygame.time.get_ticks() - ticks0]
+
+
+def ident(screen, background, expedir, input_file, result_file, instructions, isi=1000, fixation_duration=500, interTrial=1000, train=False):
+	try:
+		# Get trials from input_file
+		# stimuli are organised in a python dictionary: trial[field][i]  
+		trial, header_index = psypsyio.read_stimuli(input_file, "\t")
+		nb_trials = int(trial["trial_number"])
+		pause_i = int(nb_trials/2 -1) 
+		# print(trial["trial_number"])
+
+		# Create result file
+		result = open(result_file, "w")
+
+		# Add header to result output file
+		psypsyio.write_result_header(result, trial, result_columns)
+
+		# Initialize counts for feedback
+		nb_trials = nb_correct = nb_wrong = nb_missed = 0
+		correct_rt = wrong_rt = 0
+
+		for i in range(trial["trial_number"]):
+			screen.fill(background)
+			pygame.display.flip()
+
+			# Processing sound stimuli =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+			if train:
+				path = "stimuli/training/"
+			else:
+				path = "stimuli/test/"
+
+			# Prepare output line
+			trial_result = []
+			for key in header_index:
+				trial_result.append(trial[header_index[key]][i])
+
+			stimulus_path = "stimuli/test/" + trial["Filename"][i]
+			token = trial["Token"][i]
+			middlev = trial["presence_middleV"][i]
+			consonne = trial["Consonne"][i]
+			voyelle = trial["Voyelle"][i]
+			image_path = "ident/" + voyelle + consonne + "p" + voyelle + ".png"
+			sound = pygame.mixer.Sound(stimulus_path)
+			sound.play()
+			time.sleep(pygame.mixer.Sound.get_length(sound) + 0.5)
+			# image
+
+			stimuli_text = voyelle + consonne + "?p" + voyelle
+			ypinterface.display_text(screen, stimuli_text)
+			pygame.display.flip()
+			resp, rt = wait_ident(None)
+			screen.fill(background)
+			pygame.display.flip()
+
+
+			# Append trial measures =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+			trial_result.extend([resp, str(rt)])
+
+			# Output results =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+			psypsyio.write_result_line(result, trial_result)
+
+			pygame.time.wait(interTrial)
+
+	return
+
 # MAIN =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 if __name__ == "__main__":
 
@@ -309,19 +399,25 @@ if __name__ == "__main__":
 
 	# trial-list spec files for test (randomized)
 	abx_input = list_exp_path + str(subj) + ".csv"
+	ident_input = list_exp_path + str(subj) + ".csv"
 	# train_input = expd + "/list_trial/axb_training.csv"
 
 	# Result file columns  =*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*
 	result_columns = ["start_A", "duration_A", "end_A", "start_B", "duration_B", "end_B", "start_X", "duration_X", "end_X", "RT", "target_Response", "response", "real_RT", "Correctness"]
 
+	ident_result_columns = ["resp", "rt"]
+
 	# results file names for test and training
 	abx_result = results_path + expd + "_" + str(subj) + ".csv"
+	ident_result = results_path + expd + "_" + str(subj) + ".csv"
 	train_result = results_path + "training" + "_" + str(subj) + ".csv"
 
 	# Check whether the result file exists
 	if os.path.isfile(abx_result) and os.path.isfile(train_result):
 		raise Exception("Results for this subject already exist.")
 
+	if os.path.isfile(ident_result) and os.path.isfile(train_result):
+		raise Exception("Results for this subject already exist.")
 
 	# *=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 	# == EXP =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*

@@ -325,7 +325,7 @@ def ident(screen, background, expedir, input_file, result_file, instructions, is
 			# image
 
 			stimuli_text = voyelle + consonne + "?p" + voyelle
-			ypinterface.display_text(screen, stimuli_text)
+			psypsyinterface.display_text(screen, stimuli_text)
 			pygame.display.flip()
 			resp, rt = wait_ident(None)
 			screen.fill(background)
@@ -339,7 +339,10 @@ def ident(screen, background, expedir, input_file, result_file, instructions, is
 			psypsyio.write_result_line(result, trial_result)
 
 			pygame.time.wait(interTrial)
-
+	
+	finally:
+		print("ident fin")
+	
 	return
 
 # MAIN =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
@@ -387,12 +390,13 @@ if __name__ == "__main__":
 	# specify randomisation constraints here
 	#-------------------------
 	# for randomisation without constraints: {0: 0}
-	constraints = {3: 2, 9: 2}
 	if expd == "abx":
 		# 6 repetitions
+		constraints = {3: 2, 9: 2}
 		randomisation_files = ["list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv"]
 	elif expd == "ident":
 		# 7 repetitions
+		constraints = {3: 2, 4: 2}
 		randomisation_files = ["list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv"]
 
 	psypsyrandom.randomisation_parts(randomisation_files, list_exp_path, 1, subj, constraints)
@@ -438,7 +442,7 @@ if __name__ == "__main__":
 # #	print(str(int(resume["ave_crt"])))
 
 # (B) Test
-	# sampling rate 
+	# # sampling rate 
 	pygame.mixer.quit()
 	#sampling_freq = psypsyio.get_expt_sf(expd + "/stim")
 	pygame.mixer.init(44100, -16, 2)

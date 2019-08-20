@@ -367,18 +367,22 @@ if __name__ == "__main__":
 
 	list_path = "list/"
 	list_exp_path = list_path + expd + "/"
+	list_training = list_path + "training.csv"
 
 	results_path = "results/" + expd + "/"
 
 	# == Instructions =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-	instructions = {"start": instructions_path + "instruction.png"}
-					# "pause": instructions_path + "instruction_break.png",
-					# "end_training": instructions_path + "instruction_end_training.png",
-					# "end_exp": instructions_path + "instruction_end_exp.png"}
+	instructions = {"start": instructions_path + "expstart.png",
+					"ident": instructions_path + "instructionident.png",
+					"abx": instructions_path + "instructioniabx.png.png",
+					"pause": instructions_path + "pause.png",
+					"end_training": instructions_path + "interlude.png",
+					"end_exp": instructions_path + "end.png"}
 
 	# == Program environment parameter	=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 	font = "helvetica"
-	background = (150, 150, 150)  # gray
+	# background = (150, 150, 150)  # gray
+	background = (0, 0, 0)  # White
 
 	# Experiment parameter =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*
 	isi = 1000	# ISI = 1000ms
@@ -404,7 +408,7 @@ if __name__ == "__main__":
 	# trial-list spec files for test (randomized)
 	abx_input = list_exp_path + str(subj) + ".csv"
 	ident_input = list_exp_path + str(subj) + ".csv"
-	# train_input = expd + "/list_trial/axb_training.csv"
+	train_input = list_exp_path + "training.csv"
 
 	# Result file columns  =*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*
 	result_columns = ["start_A", "duration_A", "end_A", "start_B", "duration_B", "end_B", "start_X", "duration_X", "end_X", "RT", "target_Response", "response", "real_RT", "Correctness"]
@@ -432,25 +436,27 @@ if __name__ == "__main__":
 	#psypsyinterface.display_instruction(instructions.get("start"),
 	#	screen, screen_width, screen_height, background)
 
-# # (A) Training 
-# 	# sampling rate 
-# 	pygame.mixer.quit()
-# 	sampling_freq = psypsyio.get_expt_sf(expd + "/training")
-# 	pygame.mixer.init(sampling_freq, -16, 2)
-# 	resume = axb(screen, background, expd, train_input, train_result, instructions, isi, fixation_duration, interTrial, train=True)
-# #	print("nb ok: " + str(resume["nb_correct"]) + "/" + str(resume["nb_trials"]))
-# #	print(str(int(resume["ave_crt"])))
+# (A) Training 
+	# sampling rate 
+	#pygame.mixer.quit()
+	#pygame.mixer.init(44100, -16, 2)
+	
+#	print("nb ok: " + str(resume["nb_correct"]) + "/" + str(resume["nb_trials"]))
+#	print(str(int(resume["ave_crt"])))
 
 # (B) Test
 	# # sampling rate 
 	pygame.mixer.quit()
 	#sampling_freq = psypsyio.get_expt_sf(expd + "/stim")
 	pygame.mixer.init(44100, -16, 2)
-	psypsyinterface.display_instruction(instructions.get("start"), screen, screen_width, screen_height, background)
-
-	resume = abx(screen, background, list_exp_path, abx_input, abx_result, instructions, isi, fixation_duration)
-
-	psypsyinterface.display_instruction(instructions.get("start"), screen, screen_width, screen_height, background)
+	# psypsyinterface.display_instruction(instructions.get("start"), screen, screen_width, screen_height, background)
+	if expd == "abx":
+		resume = abx(screen, background, list_exp_path, abx_input, abx_result, instructions, isi, fixation_duration)
+	elif expd =: "ident"
+		resume = ident(screen, background, list_exp_path, ident_input, ident_result, instructions, isi, fixation_duration)
+	elif expd == "training"
+		resume = axb(screen, background, training_path, train_input, train_result, instructions, isi, fixation_duration, interTrial, train=True)
+	# psypsyinterface.display_instruction(instructions.get("start"), screen, screen_width, screen_height, background)
 
 	pygame.quit()
 

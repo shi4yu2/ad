@@ -21,6 +21,7 @@ import libpsypsy.psypsyio as psypsyio
 import libpsypsy.psypsyaxb as psypsyaxb
 import libpsypsy.psypsyinterface as psypsyinterface
 import libpsypsy.psypsyrandom as psypsyrandom
+import time
 
 #------------------------------------------------------------------------------
 #		abx() function

@@ -330,9 +330,16 @@ def ident(screen, background, expedir, input_file, result_file, instructions, is
 			psypsyinterface.display_text(screen, stimuli_text)
 			pygame.display.flip()
 			resp, rt = wait_ident(None)
+			
 			screen.fill(background)
+			pygame.event.pump()
+			pygame.event.clear() 
 			pygame.display.flip()
 
+			screen.fill(background)
+			pygame.event.pump()
+			pygame.event.clear() 
+			pygame.display.flip()
 
 			# Append trial measures =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 			trial_result.extend([resp, str(rt)])
@@ -350,16 +357,6 @@ def ident(screen, background, expedir, input_file, result_file, instructions, is
 # MAIN =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 if __name__ == "__main__":
 
-	# == command-line args: exp, subj  =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-	expd = sys.argv[1]
-	subj = sys.argv[2]
-
-	if not (expd == "abx" or expd == "ident" or expd == "training"):
-		raise Exception("Exp type should be abx or ident")
-
-	if not subj.isdigit():
-		raise Exception("Subj argument should be a number.")
-
 	# Parameter	 =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*=*
 	# == Path =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 	instructions_path = "instructions/"
@@ -368,15 +365,11 @@ if __name__ == "__main__":
 	training_path = stimuli_path + "training/"
 
 	list_path = "list/"
-	list_exp_path = list_path + expd + "/"
-	list_training = list_path + "training.csv"
-
-	results_path = "results/" + expd + "/"
 
 	# == Instructions =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-	instructions = {"start": instructions_path + "expstart.png",
+	instructions = {"start": instructions_path + "expestart.png",
 					"ident": instructions_path + "instructionident.png",
-					"abx": instructions_path + "instructioniabx.png.png",
+					"abx": instructions_path + "instructionabx.png",
 					"pause": instructions_path + "pause.png",
 					"end_training": instructions_path + "interlude.png",
 					"end_exp": instructions_path + "end.png"}
@@ -391,75 +384,166 @@ if __name__ == "__main__":
 	interTrial = 1000  # inter-trial time = 1000ms
 	fixation_duration = 500	 # fixation point duration
 
-	# == Input / Output =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*
-	#-------------------------
-	# specify randomisation constraints here
-	#-------------------------
-	# for randomisation without constraints: {0: 0}
-	if expd == "abx":
-		# 6 repetitions
-		constraints = {3: 2, 9: 2}
-		randomisation_files = ["list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv"]
-		psypsyrandom.randomisation_parts(randomisation_files, list_exp_path, 1, subj, constraints)
-	elif expd == "ident":
-		# 7 repetitions
+	# Result file columns  =*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*
+	abx_result_columns = ["start_A", "duration_A", "end_A", "start_B", "duration_B", "end_B", "start_X", "duration_X", "end_X", "RT", "target_Response", "response", "real_RT", "Correctness"]
+	ident_result_columns = ["resp", "rt"]
+
+	# == command-line args: exp, subj  =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+
+	debug = sys.argv[1]
+	if debug == "debug":
+		expd == sys.argv[2]
+		subj = sys.argv[3]
+		if not subj.isdigit():
+			raise Exception("Subj argument should be a number.")
+		if not (expd == "abx" or expd == "ident" or expd == "training"):
+			raise Exception("Exp type should be abx or ident or training")
+
+
+		list_exp_path = list_path + expd + "/"
+		list_training = list_path + "training.csv"
+		results_path = "results/" + expd + "/"
+
+		# == Input / Output =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*
+		#-------------------------
+		# specify randomisation constraints here
+		#-------------------------
+		# for randomisation without constraints: {0: 0}
+		if expd == "abx":
+			# 6 repetitions
+			constraints = {3: 2, 9: 2}
+			randomisation_files = ["list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv"]
+			psypsyrandom.randomisation_parts(randomisation_files, list_exp_path, 1, subj, constraints)
+		elif expd == "ident":
+			# 7 repetitions
+			constraints = {3: 2, 4: 2}
+			randomisation_files = ["list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv"]
+			psypsyrandom.randomisation_parts(randomisation_files, list_exp_path, 1, subj, constraints)
+		
+		# trial-list spec files for test (randomized)
+		abx_input = list_exp_path + str(subj) + ".csv"
+		ident_input = list_exp_path + str(subj) + ".csv"
+		train_input = list_path + "training.csv"
+
+
+		# results file names for test and training
+		abx_result = results_path + expd + "_" + str(subj) + ".csv"
+		ident_result = results_path + expd + "_" + str(subj) + ".csv"
+		train_result = results_path + "training" + "_" + str(subj) + ".csv"
+
+
+		# *=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		# == EXP =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		# initialise pygame graphics *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		screen, screen_width, screen_height = psypsyinterface.initialisation_pygame(background)
+
+		# General instructions 
+		psypsyinterface.display_instruction(instructions.get("start"),
+			screen, screen_width, screen_height, background)
+
+		# == Test =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		# *=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		# sampling rate 
+		pygame.mixer.quit()
+		pygame.mixer.init(44100, -16, 2)	
+		if expd == "ident":
+			psypsyinterface.display_instruction(instructions.get("ident"),
+			screen, screen_width, screen_height, background)
+			# == IDENT =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+			resume = ident(screen, background, list_exp_path, ident_input, ident_result, instructions, isi, fixation_duration)
+		elif expd == "training":
+			# == TRAINING =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+			resume = abx(screen, background, training_path, train_input, train_result, instructions, isi, fixation_duration, interTrial, train=True)
+		elif expd == "abx":
+			# == ABX =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+			resume = abx(screen, background, list_exp_path, abx_input, abx_result, instructions, isi, fixation_duration)
+
+		pygame.quit()
+
+	else:
+		subj = sys.argv[1]
+		# Parameter	 =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*=*
+		# == Path =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		expd = "ident"
+		list_exp_path = list_path + expd + "/"
+		list_training = list_path + "training.csv"
+		results_path = "results/" + expd + "/"
+
 		constraints = {3: 2, 4: 2}
 		randomisation_files = ["list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv"]
 		psypsyrandom.randomisation_parts(randomisation_files, list_exp_path, 1, subj, constraints)
-	
 
-	# trial-list spec files for test (randomized)
-	abx_input = list_exp_path + str(subj) + ".csv"
-	ident_input = list_exp_path + str(subj) + ".csv"
-	train_input = list_path + "training.csv"
+		ident_input = list_exp_path + str(subj) + ".csv"
+		ident_result = results_path + expd + "_" + str(subj) + ".csv"
 
-	# Result file columns  =*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*
-	result_columns = ["start_A", "duration_A", "end_A", "start_B", "duration_B", "end_B", "start_X", "duration_X", "end_X", "RT", "target_Response", "response", "real_RT", "Correctness"]
+		# Check whether the result file exists
+		if os.path.isfile(ident_result):
+			raise Exception("Results for this subject already exist.")
 
-	ident_result_columns = ["resp", "rt"]
+		# *=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		# == EXP =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		# initialise pygame graphics *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		screen, screen_width, screen_height = psypsyinterface.initialisation_pygame(background)
 
-	# results file names for test and training
-	abx_result = results_path + expd + "_" + str(subj) + ".csv"
-	ident_result = results_path + expd + "_" + str(subj) + ".csv"
-	train_result = results_path + "training" + "_" + str(subj) + ".csv"
+		# General instructions 
+		psypsyinterface.display_instruction(instructions.get("start"),
+			screen, screen_width, screen_height, background)
 
-	# Check whether the result file exists
-	if os.path.isfile(abx_result) and os.path.isfile(train_result):
-		raise Exception("Results for this subject already exist.")
+		# == IDENT =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		pygame.mixer.quit()
+		pygame.mixer.init(44100, -16, 2)	
 
-	if os.path.isfile(ident_result) and os.path.isfile(train_result):
-		raise Exception("Results for this subject already exist.")
+		psypsyinterface.display_instruction(instructions.get("ident"),
+			screen, screen_width, screen_height, background)
 
-	# *=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-	# == EXP =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-	# initialise pygame graphics *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-	screen, screen_width, screen_height = psypsyinterface.initialisation_pygame(background)
-
-	# General instructions 
-	#psypsyinterface.display_instruction(instructions.get("start"),
-	#	screen, screen_width, screen_height, background)
-
-# (A) Training 
-	# sampling rate 
-	#pygame.mixer.quit()
-	#pygame.mixer.init(44100, -16, 2)
-	
-#	print("nb ok: " + str(resume["nb_correct"]) + "/" + str(resume["nb_trials"]))
-#	print(str(int(resume["ave_crt"])))
-
-# (B) Test
-	# # sampling rate 
-	pygame.mixer.quit()
-	#sampling_freq = psypsyio.get_expt_sf(expd + "/stim")
-	pygame.mixer.init(44100, -16, 2)
-	# psypsyinterface.display_instruction(instructions.get("start"), screen, screen_width, screen_height, background)
-	if expd == "abx":
-		resume = abx(screen, background, list_exp_path, abx_input, abx_result, instructions, isi, fixation_duration)
-	elif expd == "ident":
 		resume = ident(screen, background, list_exp_path, ident_input, ident_result, instructions, isi, fixation_duration)
-	elif expd == "training":
-		resume = abx(screen, background, training_path, train_input, train_result, instructions, isi, fixation_duration, interTrial, train=True)
-	# psypsyinterface.display_instruction(instructions.get("start"), screen, screen_width, screen_height, background)
 
-	pygame.quit()
+		# == TRAINING =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		expd = "training"
+		list_exp_path = list_path + expd + "/"
+		list_training = list_path + "training.csv"
+		results_path = "results/" + expd + "/"
+
+		train_input = list_path + "training.csv"
+		train_result = results_path + "training" + "_" + str(subj) + ".csv"
+
+		pygame.mixer.quit()
+		pygame.mixer.init(44100, -16, 2)	
+
+		psypsyinterface.display_instruction(instructions.get("training"),
+			screen, screen_width, screen_height, background)
+
+		resume = abx(screen, background, training_path, train_input, train_result, instructions, isi, fixation_duration, interTrial, train=True)
+
+		psypsyinterface.display_instruction(instructions.get("end_training"),
+			screen, screen_width, screen_height, background)
+
+		# == ABX =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+		expd = "abx"
+		list_exp_path = list_path + expd + "/"
+		list_training = list_path + "training.csv"
+		results_path = "results/" + expd + "/"
+
+		abx_input = list_exp_path + str(subj) + ".csv"
+		abx_result = results_path + expd + "_" + str(subj) + ".csv"
+
+		constraints = {3: 2, 9: 2}
+		randomisation_files = ["list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv"]
+		psypsyrandom.randomisation_parts(randomisation_files, list_exp_path, 1, subj, constraints)
+
+		pygame.mixer.quit()
+		pygame.mixer.init(44100, -16, 2)	
+
+		psypsyinterface.display_instruction(instructions.get("abx"),
+			screen, screen_width, screen_height, background)
+
+		resume = abx(screen, background, list_exp_path, abx_input, abx_result, instructions, isi, fixation_duration)
+
+		psypsyinterface.display_instruction(instructions.get("end_exp"),
+		screen, screen_width, screen_height, background)
+
+		pygame.quit()
+
+	
+
 

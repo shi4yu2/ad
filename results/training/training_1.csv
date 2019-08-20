@@ -1,3 +1,0 @@
-A	B	X	response	start_A	duration_A	end_A	start_B	duration_B	end_B	start_X	duration_X	end_X	RT	target_Response	response	real_RT	Correctness
-F1_akipa.wav	F2_ekope.wav	H1_akipa.wav	A	2695	642	3305	6043	737	6612	4305	568	5043	0	B	NA	0	F
-F1_okapo.wav	F2_ekape.wav	H1_ekape.wav	B	10893	642	11478	14227	741	14808	12485	580	13227	15027	B	B	800	T

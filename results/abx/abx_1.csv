@@ -1,3 +1,0 @@
-A	B	X	C_A	C_B	C_X	MiddleV_A	MiddleV_B	MiddleV_X	V	part	start_A	duration_A	end_A	start_B	duration_B	end_B	start_X	duration_X	end_X	RT	target_Response	response	real_RT	Correctness
-F1_exepe.wav	F2_expe.wav	H1_exepe.wav	x	x	x	T	F	T	e	1	2706	686	3413	6124	710	6697	4413	572	5124	7292	B	B	1168	T
-F1_oxpo.wav	F2_oxopo.wav	H1_oxpo.wav	x	x	x	F	T	F	o	1	10377	735	11029	13840	810	14386	12029	545	12840	14661	B	B	821	T

@@ -39,7 +39,7 @@ def abx(screen, background, expedir, input_file, result_file, instructions, isi=
 		result = open(result_file, "w")
 
 		# Add header to result output file
-		psypsyio.write_result_header(result, trial, result_columns)
+		psypsyio.write_result_header(result, trial, abx_result_columns)
 
 		# Initialize counts for feedback
 		nb_trials = nb_correct = nb_wrong = nb_missed = 0
@@ -294,7 +294,7 @@ def ident(screen, background, expedir, input_file, result_file, instructions, is
 		result = open(result_file, "w")
 
 		# Add header to result output file
-		psypsyio.write_result_header(result, trial, result_columns)
+		psypsyio.write_result_header(result, trial, ident_result_columns)
 
 		# Initialize counts for feedback
 		nb_trials = nb_correct = nb_wrong = nb_missed = 0
@@ -390,10 +390,11 @@ if __name__ == "__main__":
 
 	# == command-line args: exp, subj  =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
-	debug = sys.argv[1]
-	if debug == "debug":
-		expd == sys.argv[2]
-		subj = sys.argv[3]
+	subj = sys.argv[1]
+	expd = sys.argv[2]
+	debug = sys.argv[3]
+
+	if debug == "debug":	
 		if not subj.isdigit():
 			raise Exception("Subj argument should be a number.")
 		if not (expd == "abx" or expd == "ident" or expd == "training"):
@@ -453,15 +454,21 @@ if __name__ == "__main__":
 			resume = ident(screen, background, list_exp_path, ident_input, ident_result, instructions, isi, fixation_duration)
 		elif expd == "training":
 			# == TRAINING =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+			psypsyinterface.display_instruction(instructions.get("training"),
+			screen, screen_width, screen_height, background)
 			resume = abx(screen, background, training_path, train_input, train_result, instructions, isi, fixation_duration, interTrial, train=True)
+			psypsyinterface.display_instruction(instructions.get("end_training"),
+			screen, screen_width, screen_height, background)
+
 		elif expd == "abx":
 			# == ABX =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+			psypsyinterface.display_instruction(instructions.get("abx"),
+			screen, screen_width, screen_height, background)
 			resume = abx(screen, background, list_exp_path, abx_input, abx_result, instructions, isi, fixation_duration)
 
 		pygame.quit()
 
 	else:
-		subj = sys.argv[1]
 		# Parameter	 =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*=*=*=*=*
 		# == Path =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 		expd = "ident"

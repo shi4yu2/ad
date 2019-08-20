@@ -236,15 +236,16 @@ def abx(screen, background, expedir, input_file, result_file, instructions, isi=
 		result.close()
 
 	finally:
+		resume = None
 
 		if not train:
 #			print("End experiment\n")
 			pygame.time.wait(1000)
 		else:
-			summary = "nb ok: " + str(resume["nb_correct"]) + "/" \
- + str(resume["nb_trials"]) + ", ok RT: " + str(int(resume["ave_crt"])) \
- + " ==> Space to continue"
-			psypsyinterface.display_text(screen, summary)
+	# 		summary = "nb ok: " + str(resume["nb_correct"]) + "/" \
+ # + str(resume["nb_trials"]) + ", ok RT: " + str(int(resume["ave_crt"])) \
+ # + " ==> Space to continue"
+			# psypsyinterface.display_text(screen, summary)
 			psypsyinterface.wait_for_space()
 			psypsyinterface.clear_screen(screen, background)
 #			print("End training\n")
@@ -352,7 +353,7 @@ if __name__ == "__main__":
 	expd = sys.argv[1]
 	subj = sys.argv[2]
 
-	if not (expd == "abx" or expd == "ident"):
+	if not (expd == "abx" or expd == "ident" or expd == "training"):
 		raise Exception("Exp type should be abx or ident")
 
 	if not subj.isdigit():
@@ -382,7 +383,7 @@ if __name__ == "__main__":
 	# == Program environment parameter	=*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 	font = "helvetica"
 	# background = (150, 150, 150)  # gray
-	background = (0, 0, 0)  # White
+	background = (255, 255, 255)  # White
 
 	# Experiment parameter =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*
 	isi = 1000	# ISI = 1000ms
@@ -398,17 +399,18 @@ if __name__ == "__main__":
 		# 6 repetitions
 		constraints = {3: 2, 9: 2}
 		randomisation_files = ["list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv"]
+		psypsyrandom.randomisation_parts(randomisation_files, list_exp_path, 1, subj, constraints)
 	elif expd == "ident":
 		# 7 repetitions
 		constraints = {3: 2, 4: 2}
 		randomisation_files = ["list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv", "list/" + expd + ".csv"]
-
-	psypsyrandom.randomisation_parts(randomisation_files, list_exp_path, 1, subj, constraints)
+		psypsyrandom.randomisation_parts(randomisation_files, list_exp_path, 1, subj, constraints)
+	
 
 	# trial-list spec files for test (randomized)
 	abx_input = list_exp_path + str(subj) + ".csv"
 	ident_input = list_exp_path + str(subj) + ".csv"
-	train_input = list_exp_path + "training.csv"
+	train_input = list_path + "training.csv"
 
 	# Result file columns  =*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=**=*=*=*=*=*=*
 	result_columns = ["start_A", "duration_A", "end_A", "start_B", "duration_B", "end_B", "start_X", "duration_X", "end_X", "RT", "target_Response", "response", "real_RT", "Correctness"]
@@ -452,10 +454,10 @@ if __name__ == "__main__":
 	# psypsyinterface.display_instruction(instructions.get("start"), screen, screen_width, screen_height, background)
 	if expd == "abx":
 		resume = abx(screen, background, list_exp_path, abx_input, abx_result, instructions, isi, fixation_duration)
-	elif expd =: "ident"
+	elif expd == "ident":
 		resume = ident(screen, background, list_exp_path, ident_input, ident_result, instructions, isi, fixation_duration)
-	elif expd == "training"
-		resume = axb(screen, background, training_path, train_input, train_result, instructions, isi, fixation_duration, interTrial, train=True)
+	elif expd == "training":
+		resume = abx(screen, background, training_path, train_input, train_result, instructions, isi, fixation_duration, interTrial, train=True)
 	# psypsyinterface.display_instruction(instructions.get("start"), screen, screen_width, screen_height, background)
 
 	pygame.quit()

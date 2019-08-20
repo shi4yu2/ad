@@ -3,7 +3,7 @@
 
 __author__ = 'ShY'
 __copyright__ = 'Copyright 2019, SHY'
-__version__ = '0.1s.0 (20190818)'
+__version__ = '0.1.0 (20190818)'
 __maintainer__ = 'ShY'
 __email__ = 'shi4yu2@gmail.com'
 __status__ = 'Development'
@@ -32,7 +32,9 @@ def abx(screen, background, expedir, input_file, result_file, instructions, isi=
 	# stimuli are organised in a python dictionary: trial[field][i]  
 		trial, header_index = psypsyio.read_stimuli(input_file, "\t")
 		nb_trials = int(trial["trial_number"])
-		pause_i = int(nb_trials/2 -1) 
+		pause_1 = int(nb_trials / 4 -1) 
+		pause_2 = int(nb_trials / 4 * 2 -1) 
+		pause_3 = int(nb_trials / 4 * 3 -1) 
 		# print(trial["trial_number"])
 
 		# Create result file
@@ -51,7 +53,7 @@ def abx(screen, background, expedir, input_file, result_file, instructions, isi=
 
 			# Pauses (test phase): halfway, 1 break
 			if not train:
-				if i == pause_i:
+				if i == pause_1 or i == pause_2 or i == pause_3:
 					psypsyaxb.axb_pause(screen, screen_width, screen_height, background, instructions.get("pause"))
 
 			# Processing sound stimuli =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*
@@ -449,21 +451,20 @@ if __name__ == "__main__":
 		pygame.mixer.init(44100, -16, 2)	
 		if expd == "ident":
 			psypsyinterface.display_instruction(instructions.get("ident"),
-			screen, screen_width, screen_height, background)
+				screen, screen_width, screen_height, background)
 			# == IDENT =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 			resume = ident(screen, background, list_exp_path, ident_input, ident_result, instructions, isi, fixation_duration)
 		elif expd == "training":
 			# == TRAINING =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-			psypsyinterface.display_instruction(instructions.get("training"),
-			screen, screen_width, screen_height, background)
+			psypsyinterface.display_instruction(instructions.get("abx"),
+				screen, screen_width, screen_height, background)
 			resume = abx(screen, background, training_path, train_input, train_result, instructions, isi, fixation_duration, interTrial, train=True)
+			
 			psypsyinterface.display_instruction(instructions.get("end_training"),
-			screen, screen_width, screen_height, background)
+				screen, screen_width, screen_height, background)
 
 		elif expd == "abx":
 			# == ABX =*=*=**=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-			psypsyinterface.display_instruction(instructions.get("abx"),
-			screen, screen_width, screen_height, background)
 			resume = abx(screen, background, list_exp_path, abx_input, abx_result, instructions, isi, fixation_duration)
 
 		pygame.quit()

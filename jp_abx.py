@@ -124,15 +124,17 @@ def abx(screen, background, expedir, input_file, result_file, instructions, isi=
 				xb_measures.append(start_sound)
 				s.play()  # play sound
 
-				# index_b == 1: 2000ms after sound B
+				# index_b == 1: 2000ms after sound X
 				if index_b == 1:
 					isi_post = 2000
 				else:
-					# index_b == 0: 1000ms after sound X
+					# index_b == 0: 1000ms after sound B
 					isi_post = 1000
 
-				while pygame.mixer.get_busy() and not response or (
-						pygame.time.get_ticks() - start_sound <= duration + isi_post):
+				# while pygame.mixer.get_busy() and not response or (
+				# 		pygame.time.get_ticks() - start_sound <= duration + isi_post):
+				while pygame.mixer.get_busy() and not response or (index_b == 0 and
+						pygame.time.get_ticks() - start_sound <= duration + isi_post) or (index_b == 1 and not response):
 					for e in pygame.event.get():
 						if e.type == QUIT or (e.type == KEYDOWN and e.key == K_ESCAPE):
 							raise Exception("aborted")
@@ -185,14 +187,14 @@ def abx(screen, background, expedir, input_file, result_file, instructions, isi=
 				nb_correct += 1
 				correct_rt += real_rt
 				if train:
-					psypsyinterface.display_text_colour(screen, str(real_rt) + " ms", colour=(0, 255, 0))
+					psypsyinterface.display_text_colour(screen, "O", font_size=600, colour=(0, 255, 0))
 					pygame.time.wait(500)
 					psypsyinterface.clear_screen(screen, background)
 			elif response_type_s == "NA":
 				correct = "F"
 				nb_missed += 1
 				if train:
-					psypsyinterface.display_text_colour(screen, "???")
+					psypsyinterface.display_text_colour(screen, "???", font_size=400)
 					pygame.time.wait(500)
 					psypsyinterface.clear_screen(screen, background)
 			else:
@@ -202,7 +204,7 @@ def abx(screen, background, expedir, input_file, result_file, instructions, isi=
 				wrong_rt += real_rt
 				if train:
 					for click in range(3):
-						psypsyinterface.display_text_colour(screen, str(real_rt) + "ms")
+						psypsyinterface.display_text_colour(screen, "X", font_size=600)
 						pygame.time.wait(100)
 						psypsyinterface.clear_screen(screen, background)
 						pygame.time.wait(50)
